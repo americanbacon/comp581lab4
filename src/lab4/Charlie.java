@@ -175,13 +175,17 @@ public class Charlie {
 	 */
 	public void moveTillTouch() {
 		this.syncMotors();
+		this.setBothSpeed(270);
 		// float[] sample_touchL = new float[touchL.sampleSize()];
 		float[] sample_touchR = new float[touchR.sampleSize()];
-
-		while (sample_touchR[0] == 0) {
+		float[] sample_touchL = new float[touchL.sampleSize()];
+		this.prevt = System.nanoTime();
+		while (sample_touchR[0] == 0 && sample_touchL[0] == 0) {
 			this.moveForwardBoth();
 			// touchL.fetchSample(sample_touchL, 0);
 			touchR.fetchSample(sample_touchR, 0);
+			touchL.fetchSample(sample_touchL, 0);
+			this.update(270,  270);
 		}
 		this.stopBothInstant();
 		this.stopSync();
@@ -219,13 +223,9 @@ public class Charlie {
 	public void moveBackwardTime(double sec) {
 		this.syncMotors();
 		this.moveBackwardBoth();
-		// this.updateBackwards();
 		Delay.msDelay((long) sec);
-		// this.updateBackwards();
 		this.stopBothInstant();
 		this.stopSync();
-		this.update(-this.motorL.getSpeed(), -this.motorR.getSpeed(), sec);
-
 	}
 
 	/*
@@ -261,7 +261,6 @@ public class Charlie {
 		double sec = this.moveTime(vr, vl, d);
 		x = x - d * Math.cos(this.theta);
 		y = y - d * Math.sin(this.theta);
-
 		this.moveBackwardTime(sec);
 	}
 
@@ -371,7 +370,7 @@ public class Charlie {
 	 */
 
 	public void rotateLeft(double degrees) {
-		System.out.println("RotateLeft");
+//		System.out.println("RotateLeft");
 		this.stopSync();
 		this.motorR.forward();
 		this.setRightSpeed(180);
@@ -385,13 +384,13 @@ public class Charlie {
 	// move left forward and right backward to create a spin
 	// TODO: Overcorrects.  Need to account for that.
 	public void turnInPlaceRight(double degrees) {
-		System.out.println("Turning in place right");
+//		System.out.println("Turning in place right");
 //		this.stopSync();
 		this.setBothSpeed(180);
 		this.motorL.forward();
 		this.motorR.backward();
 		double delay = this.timeToRotate(-180, 180, -degrees);
-		System.out.println("Delay: " + (delay / 1000));
+//		System.out.println("Delay: " + (delay / 1000));
 		Delay.msDelay((long) delay);
 		this.stopBothInstant();
 		update(180, -180, delay / 1000);
@@ -400,13 +399,13 @@ public class Charlie {
 	// move right forward and left backward to create a spin
 	// TODO: Overcorrects.  Need to account for that.
 	public void turnInPlaceLeft(double degrees) {
-		System.out.println("Turning in place left");
+//		System.out.println("Turning in place left");
 //		this.stopSync();
 		this.setBothSpeed(180);
 		this.motorL.backward();
 		this.motorR.forward();
 		double delay = this.timeToRotate(180, -180, degrees);
-		System.out.println("Delay: " + (delay / 1000));
+//		System.out.println("Delay: " + (delay / 1000));
 		Delay.msDelay((long) delay);
 		this.stopBothInstant();
 		update(-180, 180, delay / 1000);
@@ -470,7 +469,7 @@ public class Charlie {
 		this.syncMotors();
 		this.moveForwardBoth();
 
-		System.out.println((System.nanoTime() - startTime > 30 * Math.pow(10, 9)));
+//		System.out.println((System.nanoTime() - startTime > 30 * Math.pow(10, 9)));
 
 		// 3: loop till return to origin
 		while (!Button.ENTER.isDown()
@@ -480,7 +479,7 @@ public class Charlie {
 
 			// 4: check to see if wall is bumped
 			if (this.frontBump()) {
-				System.out.println("front bump");
+//				System.out.println("front bump");
 				this.update(this.motorL.getSpeed(), this.motorR.getSpeed());
 				this.stopBothInstant();
 				// 4.1: back up body length
@@ -497,7 +496,7 @@ public class Charlie {
 				// 4.5: continue on to next iteration of big loop
 				continue;
 			} else if (this.leftBump()) {
-				System.out.println("left bump");
+//				System.out.println("left bump");
 				this.setDiffSpeeds(270, 180);
 				continue;
 			}
@@ -552,24 +551,24 @@ public class Charlie {
 		// rotate back -45 degrees to sense behind (angle now at -135)
 		this.rotateSonic(-45);
 		senses[0] = this.sonicSense();
-		System.out.println(senses[0]);
+//		System.out.println(senses[0]);
 
 		// rotate forward 50 degrees to sense where position was but a little past to
 		// account for exact reflection
 		// angle now at -85
 		this.rotateSonic(50);
 		senses[1] = this.sonicSense();
-		System.out.println(senses[1]);
+//		System.out.println(senses[1]);
 
 		// rotate forward 40 (now angle is -45) so its looking ahead
 		this.rotateSonic(40);
 		senses[2] = this.sonicSense();
-		System.out.println(senses[2]);
+//		System.out.println(senses[2]);
 
 		// rotate forward (angel now at 0) and sense
 		this.rotateSonic(45);
 		senses[3] = this.sonicSense();
-		System.out.println(senses[3]);
+//		System.out.println(senses[3]);
 
 		// returns sonic to original state
 		// angle now at -90
@@ -602,7 +601,7 @@ public class Charlie {
 		this.prevt = end;
 		end = end / Math.pow(10, 9);
 		double dt = end - start;
-		System.out.println("dt = " + dt);
+//		System.out.println("dt = " + dt);
 		// vl/r is equal to the motor speed converted to radians multiplied by radius
 		double vr = ur * (Math.PI / 180) * this.radiusR;
 		double vl = ul * (Math.PI / 180) * this.radiusL;
@@ -618,8 +617,8 @@ public class Charlie {
 	
 	public void update(double ul, double ur, double dt) {
 		// vl/r is equal to the motor speed converted to radians multiplied by radius
-		System.out.println("vl = " + ul); // Not quite, maybe just pass in parameter?
-		System.out.println("vr = " + ur);
+//		System.out.println("vl = " + ul); // Not quite, maybe just pass in parameter?
+//		System.out.println("vr = " + ur);
 		double vr = ur * (Math.PI / 180) * this.radiusR;
 		double vl = ul * (Math.PI / 180) * this.radiusL;
 		double w = (vr - vl) / this.L;
@@ -740,13 +739,13 @@ public class Charlie {
 	// rotate in place to the angle of the m-line
 	public void rotateToMLine() {
 		if (this.theta > this.mLineAngle + Math.PI) {
-			System.out.println("Rotate Left");
+//			System.out.println("Rotate Left");
 			turnInPlaceLeft(radiansToDegrees(2 * Math.PI - this.theta + this.mLineAngle));
-			System.out.println("Theta: " + this.theta);
+//			System.out.println("Theta: " + this.theta);
 		} else {
-			System.out.println("Rotate Right");
+//			System.out.println("Rotate Right");
 			turnInPlaceRight(radiansToDegrees(this.theta - this.mLineAngle));
-			System.out.println("Theta: " + this.theta);
+//			System.out.println("Theta: " + this.theta);
 		}
 	}
 
