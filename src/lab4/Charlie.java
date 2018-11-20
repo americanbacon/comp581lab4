@@ -159,7 +159,7 @@ public class Charlie {
 		while (sample_sonic[0] > d) {
 			this.moveForwardBoth();
 			sonic.fetchSample(sample_sonic, 0);
-			this.update(270,270);
+			this.update(speed, speed);
 		}
 		this.stopBothInstant();
 //		double time = (System.nanoTime() - startTime);
@@ -617,10 +617,9 @@ public class Charlie {
 	}
 	
 	public void update(double ul, double ur, double dt) {
-		this.prevt = System.nanoTime();
 		// vl/r is equal to the motor speed converted to radians multiplied by radius
-		System.out.println("vl = " + this.motorL.getRotationSpeed()); // Not quite, maybe just pass in parameter?
-		System.out.println("vr = " + this.motorR.getRotationSpeed());
+		System.out.println("vl = " + ul); // Not quite, maybe just pass in parameter?
+		System.out.println("vr = " + ur);
 		double vr = ur * (Math.PI / 180) * this.radiusR;
 		double vl = ul * (Math.PI / 180) * this.radiusL;
 		double w = (vr - vl) / this.L;
@@ -629,6 +628,7 @@ public class Charlie {
 		this.y += ((vl + vr) / 2.0) * Math.sin(this.theta) * dt;
 		// System.out.println("Pose: (" + this.x + ", " + this.y + ", " + this.theta +
 		// ")");
+		this.prevt = System.nanoTime();
 	}
 
 	// Does not work as of now
