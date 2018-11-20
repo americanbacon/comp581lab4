@@ -300,7 +300,7 @@ public class Charlie {
 	/*
 	 * Name: rotateSonic in: degrees out: nothing description: should rotate sonic
 	 * sensor to certain angle relative to robot
-	 * 
+	 *
 	 */
 	public void rotateSonic(int degrees) {
 		this.motorM.setSpeed(90);
@@ -429,7 +429,7 @@ public class Charlie {
 //	 * in: ul, ur, theta
 //	 * out: seconds to move
 //	 * */
-//	
+//
 	public double timeToRotate(double ur, double ul, double theta) {
 		double vr = ur * Math.PI / 180 * this.radiusR;
 		double vl = ul * Math.PI / 180 * this.radiusL;
@@ -614,7 +614,7 @@ public class Charlie {
 		// System.out.println("Pose: (" + this.x + ", " + this.y + ", " + this.theta +
 		// ")");
 	}
-	
+
 	public void update(double ul, double ur, double dt) {
 		// vl/r is equal to the motor speed converted to radians multiplied by radius
 //		System.out.println("vl = " + ul); // Not quite, maybe just pass in parameter?
@@ -789,7 +789,7 @@ public class Charlie {
 		}
 		return this.theta;
 	}
-	
+
 	// Just making sure this works
 	public void spin() {
 		this.setBothSpeed(180);
@@ -801,4 +801,123 @@ public class Charlie {
 
 	// I also added turnInPlaceRight and turnInPlaceLeft up by rotateRight and
 	// rotateLeft
+
+	//Sarah Stuff below
+public boolean inRange(double x, double y, double range) {
+	return this.x < x + range && this.x > x - range && this.y < y + range && this.y < y + range;
+}
+
+public boolean returnedToHP() {
+	return this.inRange(this.hitX, this.hitY, .05);
+}
+
+public boolean frontBump() {
+
+	float[] sample_touchL = new float[touchL.sampleSize()];
+	float[] sample_touchR = new float[touchR.sampleSize()];
+	touchL.fetchSample(sample_touchL, 0);
+	touchR.fetchSample(sample_touchR, 0);
+
+	return sample_touchR[0] != 0 || sample_touchL[0] != 0;
+
+}
+
+public void bug2() {
+
+	// while distance to goal is larger than 15 cm
+	while (this.distToGoal(this.x, this.y) > .10) {
+		// only if path is clear, rotate towards goal on mline and movets
+		// if (canMoveMl()) {
+		// CALL turn toward goal on mline
+		this.rotateToMLine();
+		// CALL move mline till sense
+		this.moveTillSense(.10);
+		// TURN RIGHT
+		this.turnInPlaceRight(105);
+		// RESET NEW HIT VALUE
+		this.hitX = this.x;
+		this.hitY = this.y;
+		// }
+
+		// CALL trace till mline
+		this.tracetmline();
+	}
+
+}
+
+public boolean tracetmline() {
+
+	// 1: take a valid reading from sonic
+	this.rotateSonic(-70);
+	float sonic = this.sonicSense();
+	float bs = 180;
+	this.setBothSpeed(bs);
+	this.syncMotors();
+	this.moveForwardBoth();
+
+	while (!(this.inMLineRange() && this.distToGoal(this.x, this.y) < this.distToGoal(this.hitX, this.hitY))
+			&& !(returnedToHP())) {
+		this.update();
+		if (this.frontBump()) {
+			System.out.println("front bump");
+			this.update();
+			this.stopBothInstant();
+			// 4.1: back up body length
+			this.moveBackwardDist(0.15);
+
+			// 4.3: turn
+			this.turnInPlaceRight(105);
+
+			// 4.4: move forward
+			this.moveForwardBoth();
+			this.setBothSpeed(bs);
+
+			// 4.5: continue on to next iteration of big loop
+			continue;
+		}
+
+		double dbuff = .08;
+		double d1 = 0.05 + dbuff;
+		double d2 = 0.12 + dbuff;
+		double d3 = 0.14 + dbuff;
+		double d4 = .16 + dbuff;
+		double d5 = .18 + dbuff;
+		double d6 = .25 + dbuff;
+		if (sonic <= d1) {
+			// Option 1: way too close -- move to the right fast
+			this.setDiffSpeeds(270, 180);
+		} else if (sonic < d2) {
+			// Option 2: way too close -- move to the right fast
+			this.setDiffSpeeds(240, 180);
+		} else if (sonic < d3) {
+			// Option 3: a little to close to wall -- adjust right a little
+			this.setDiffSpeeds(210, 180);
+		} else if (sonic >= d3 && sonic <= d4) {
+			// Option 4: just right -- set wheels to same speed and move on forward
+			this.setBothSpeed(180);
+		} else if (sonic > d4 && sonic <= d5) {
+			// Option 5: a little too far from wall -- move left slow
+			this.setDiffSpeeds(180, 210);
+		} else if (sonic > d5 && sonic <= d6) {
+			// Option 6: a little too far from wall -- move left slow
+			this.setDiffSpeeds(180, 240);
+		} else { // .2
+			// Option 7: way too far -- move to the left fast
+			this.setDiffSpeeds(180, 270);
+		}
+		sonic = this.sonicSense();
+	}
+
+	// stop motors and sychronization
+	this.stopBothInstant();
+	this.stopSync();
+
+	// return sonic to original position
+	this.rotateSonic(70);
+	// if has returned to hitpoint, return false else true
+	return !returnedToHP();
+
+}
+
+
 }
