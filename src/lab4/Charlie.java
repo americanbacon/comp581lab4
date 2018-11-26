@@ -847,7 +847,7 @@ public class Charlie {
 			// CALL trace till mline
 			this.tracetmline();
 		}
-
+		goToGoal();
 	}
 
 	public boolean tracetmline() {
@@ -934,6 +934,10 @@ public class Charlie {
 		this.hitY = this.y;
 		this.goalDist = this.distToGoal(this.hitX, this.hitY);
 		return error;
+	}
+	
+	public void goToGoal() {
+		moveForwardDist(distToGoal(this.x, this.y));
 	}
 
 }
