@@ -159,10 +159,17 @@ public class Charlie_Work {
 		float[] sample_sonic = new float[this.sonic.sampleSize()];
 		this.sonic.fetchSample(sample_sonic, 0);
 		this.prevt = System.nanoTime();
-		while (sample_sonic[0] > d && this.distToGoal(this.x, this.y) > .20 && !Button.ENTER.isDown() && !this.stop) {
+		while (sample_sonic[0] > d && this.distToGoal(this.x, this.y) > .20 && !Button.ENTER.isDown() && !this.stop
+				&& !this.frontBump()) {
 			this.moveForwardBoth();
 			sonic.fetchSample(sample_sonic, 0);
 			this.update(speed, speed);
+		}
+		if (this.frontBump()) {
+			this.update(this.motorL.getSpeed(), this.motorR.getSpeed());
+			this.stopBothInstant();
+			// 4.1: back up body length
+			this.moveBackwardDist(0.15);
 		}
 		this.stopBothInstant();
 //		double time = (System.nanoTime() - startTime);
@@ -393,10 +400,9 @@ public class Charlie_Work {
 		this.motorL.forward();
 		this.motorR.backward();
 		double delay = this.timeToRotate(-180, 180, -degrees);
-//		double delayActual = this.timeToRotate(-180, 180, -(degrees-5));
+		double delayActual = this.timeToRotate(-180, 180, -(degrees - 5));
 //		System.out.println("Delay: " + (delay / 1000));
-//		Delay.msDelay((long) delayActual);
-		Delay.msDelay((long) delay);
+		Delay.msDelay((long) delayActual);
 		this.stopBothInstant();
 		update(180, -180, delay / 1000);
 	}
@@ -410,10 +416,9 @@ public class Charlie_Work {
 		this.motorL.backward();
 		this.motorR.forward();
 		double delay = this.timeToRotate(180, -180, degrees);
-//		double delayActual = this.timeToRotate(180, -180, degrees-5);
+		double delayActual = this.timeToRotate(180, -180, (degrees - 5));
 //		System.out.println("Delay: " + (delay / 1000));
-//		Delay.msDelay((long) delayActual);
-		Delay.msDelay((long) delay);
+		Delay.msDelay((long) delayActual);
 		this.stopBothInstant();
 		update(-180, 180, delay / 1000);
 	}
@@ -617,7 +622,8 @@ public class Charlie_Work {
 //		double xadjust = .9748;
 		updateTheta(w * dt);
 		this.x += /* xadjust */ ((vl + vr) / 2.0) * Math.cos(this.theta) * dt;
-		this.y += ((vl + vr) / 2.0) * Math.sin(this.theta) * dt;
+		double y_adjust = 0.971;
+		this.y += y_adjust * ((vl + vr) / 2.0) * Math.sin(this.theta) * dt;
 		// System.out.println("Pose: (" + this.x + ", " + this.y + ", " + this.theta +
 		// ")");
 
@@ -635,8 +641,9 @@ public class Charlie_Work {
 		double vl = ul * (Math.PI / 180) * this.radiusL;
 		double w = (vr - vl) / this.L;
 		updateTheta(w * dt);
+		double y_adjust = 0.971;
 		this.x += ((vl + vr) / 2.0) * Math.cos(this.theta) * dt;
-		this.y += ((vl + vr) / 2.0) * Math.sin(this.theta) * dt;
+		this.y += y_adjust * ((vl + vr) / 2.0) * Math.sin(this.theta) * dt;
 		// System.out.println("Pose: (" + this.x + ", " + this.y + ", " + this.theta +
 		// ")");
 		this.prevt = System.nanoTime();
@@ -675,6 +682,10 @@ public class Charlie_Work {
 
 	public void printPos() {
 		System.out.println("x: " + this.x + ", y: " + this.y + ", theta: " + this.theta);
+	}
+	
+	public void printHitPt() {
+		System.out.println("x: " + this.hitX + ", y: " + this.hitY);
 	}
 
 	public boolean withinRange(double x, double y) {
@@ -750,6 +761,7 @@ public class Charlie_Work {
 	// Out: boolean for whether or not you're in range of m-line
 	public boolean inMLineRange() {
 		if (this.y < (2.25 * this.x - 2.15) && this.y > (2.25 * this.x - 2.35)) {
+			this.printPos();
 			return true;
 		}
 		return false;
@@ -857,12 +869,13 @@ public class Charlie_Work {
 			if (this.distToGoal(this.x, this.y) < .25) {
 				break;
 			}
-			
+
 			// TURN RIGHT
 			this.turnInPlaceRight(90);
 			// RESET NEW HIT VALUE
 			this.hitX = this.x;
 			this.hitY = this.y;
+			this.printHitPt();
 			this.goalDist = this.distToGoal(this.hitX, this.hitY);
 			// }
 
@@ -955,10 +968,12 @@ public class Charlie_Work {
 		boolean error = !returnedToHP();
 		this.hitX = this.x;
 		this.hitY = this.y;
+		this.printHitPt();
+		this.buttonWait();
 		this.goalDist = this.distToGoal(this.hitX, this.hitY);
 		return error;
 	}
-	
+
 	// Shorter song
 	public void jingleBells() {
 		// Jingle bells
@@ -978,7 +993,7 @@ public class Charlie_Work {
 		Sound.playTone(330, 200);
 		Sound.playTone(370, 400);
 	}
-	
+
 	// Longer song
 	public void merryChristmas() {
 		// We wish you a merry christmas
@@ -990,7 +1005,7 @@ public class Charlie_Work {
 		Sound.playTone(370, 150);
 		Sound.playTone(330, 300);
 		Sound.playTone(330, 300);
-		
+
 		// We wish you a merry christmas
 		Sound.playTone(330, 300);
 		Sound.playTone(440, 300);
@@ -1000,7 +1015,7 @@ public class Charlie_Work {
 		Sound.playTone(392, 150);
 		Sound.playTone(370, 300);
 		Sound.playTone(294, 300);
-		
+
 		// We wish you a merry christmas
 		Sound.playTone(294, 300);
 		Sound.playTone(494, 300);
@@ -1019,10 +1034,10 @@ public class Charlie_Work {
 		Sound.playTone(370, 300);
 		Sound.playTone(392, 300);
 	}
-	
+
 	public void check_stop() {
-		if(this.distToGoal(this.x, this.y)<0.15) {
-			this.stop=true;
+		if (this.distToGoal(this.x, this.y) < 0.15) {
+			this.stop = true;
 		} else if (Button.ENTER.isDown()) {
 			this.stop = true;
 		}
