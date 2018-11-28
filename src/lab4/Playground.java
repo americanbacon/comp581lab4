@@ -18,7 +18,7 @@ public class Playground {
 		
 		charlie.printPos();
 		charlie.buttonWait();
-		charlie.rotateToMLine();
+//		charlie.rotateToMLine();
 		charlie.moveTillTouch();
 		charlie.printPos();
 		charlie.moveBackwardDist(0.15);
