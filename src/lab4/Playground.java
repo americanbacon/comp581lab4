@@ -22,6 +22,15 @@ public class Playground {
 //		charlie.moveTillSense(.10);
 //		charlie.printPos();
 //		charlie.moveBackwardDist(0.15);
+		charlie.turnInPlaceRight(45);
+		charlie.printPos();
+		charlie.buttonWait();
+		charlie.turnInPlaceRight(90);
+		charlie.printPos();
+		charlie.buttonWait();
+		charlie.turnInPlaceRight(180);
+		charlie.printPos();
+		charlie.buttonWait();
 		charlie.turnInPlaceRight(360);
 		charlie.printPos();
 		charlie.buttonWait();

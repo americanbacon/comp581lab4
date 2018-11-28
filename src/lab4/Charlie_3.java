@@ -407,10 +407,10 @@ public class Charlie_3 {
 		this.motorL.forward();
 		this.motorR.backward();
 		double delay = this.timeToRotate(-speed, speed, -degrees);
-//		double delayActual = this.timeToRotate(-180, 180, -(degrees-5));
+//		double delayActual = this.timeToRotate(-180, 180, -.99*degrees);
 //		System.out.println("Delay: " + (delay / 1000));
 //		Delay.msDelay((long) delayActual);
-		Delay.msDelay((long) delay);
+		Delay.msDelay((long) (.95*delay));
 		this.stopBothInstant();
 		this.stopSync();
 		update(speed, -speed, delay / 1000);
@@ -428,10 +428,10 @@ public class Charlie_3 {
 		this.motorL.backward();
 		this.motorR.forward();
 		double delay = this.timeToRotate(speed, -speed, degrees);
-//		double delayActual = this.timeToRotate(180, -180, degrees-5);
+//		double delayActual = this.timeToRotate(180, -180, degrees *.99);
 //		System.out.println("Delay: " + (delay / 1000));
 //		Delay.msDelay((long) delayActual);
-		Delay.msDelay((long) delay);
+		Delay.msDelay((long) (.95*delay));
 		this.stopBothInstant();
 		this.stopSync();
 		update(-speed, speed, delay / 1000);
