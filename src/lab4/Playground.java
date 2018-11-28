@@ -4,9 +4,9 @@ public class Playground {
 
 	// Making sure Charlie's new stuff works
 	public static void main(String[] args) {
-		Charlie charlie = new Charlie();
-//		charlie.printPos();
-//		charlie.buttonWait();
+		Charlie_3 charlie = new Charlie_3();
+		charlie.printPos();
+		charlie.buttonWait();
 //		charlie.turnInPlaceRight(90);
 //		charlie.printPos();
 //		charlie.buttonWait();
@@ -16,13 +16,18 @@ public class Playground {
 		
 //		charlie.spin();
 		
-		charlie.printPos();
-		charlie.buttonWait();
+
 //		charlie.rotateToMLine();
-		charlie.moveTillTouch();
-		charlie.printPos();
-		charlie.moveBackwardDist(0.15);
+//		charlie.moveTillTouch();
+//		charlie.moveTillSense(.10);
+//		charlie.printPos();
+//		charlie.moveBackwardDist(0.15);
+		charlie.turnInPlaceRight(360);
 		charlie.printPos();
 		charlie.buttonWait();
+		
+//		charlie.jingleBells();
+//		charlie.buttonWait();
+//		charlie.merryChristmas();
 	}
 }

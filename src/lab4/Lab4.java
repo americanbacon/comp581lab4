@@ -8,5 +8,9 @@ public class Lab4 {
 		charlie.buttonWait();
 		charlie.bug2();
 		charlie.buttonWait();
+		charlie.jingleBells();
+		charlie.buttonWait();
+		charlie.merryChristmas();
+		charlie.buttonWait();
 	}
 }

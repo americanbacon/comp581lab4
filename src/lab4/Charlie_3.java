@@ -183,8 +183,6 @@ public class Charlie_3 {
 		this.stopSync();
 	}
 
-
-
 	/*
 	 * Name: moveTillTouch in: nothing out: nothing description: moves robot forward
 	 * till touch sensor encounters an obstacle
@@ -695,13 +693,14 @@ public class Charlie_3 {
 	}
 
 	public void printPos() {
-		System.out.println("x: " + this.x + ", y: " + this.y + ", theta: " + this.theta);
+		System.out.println("x: " + String.format("%.3g", this.x) + ", y: " + String.format("%.3g", this.y) + ", theta: "
+				+ Math.round(radiansToDegrees(this.theta)));
 	}
 
 	public void printHitPt() {
-		System.out.println("hitX: " + this.hitX + ", hitY: " + this.hitY);
+		System.out.println("hitX: " + String.format("%.3g", this.hitX) + ", hitY: " + String.format("%.3g", this.hitY));
 	}
-	
+
 	public boolean withinRange(double x, double y) {
 		return ((this.x < x && this.x >= 0 - x) && (this.y < y && this.y > 0 - y));
 	}
@@ -790,7 +789,7 @@ public class Charlie_3 {
 ////			System.out.println("Theta: " + this.theta);
 //		} else {
 //			System.out.println("Rotate Right");
-			turnInPlaceRight(radiansToDegrees(this.theta - this.mLineAngle));
+		turnInPlaceRight(radiansToDegrees(this.theta - this.mLineAngle));
 //			System.out.println("Theta: " + this.theta);
 //		}
 	}
@@ -881,7 +880,7 @@ public class Charlie_3 {
 			this.moveTillSense(.10);
 			// TODO: need to check to see if move till sense reached goal
 			if (this.distToGoal(this.x, this.y) < .15) {
-				System.out.println("Stopping after mts with a dist to goal of: "+this.distToGoal(this.x, this.y));
+				System.out.println("Stopping after mts with a dist to goal of: " + this.distToGoal(this.x, this.y));
 				break;
 			}
 
@@ -1052,11 +1051,11 @@ public class Charlie_3 {
 
 	public void check_stop() {
 		if (this.distToGoal(this.x, this.y) < 0.15) {
-			System.out.println("Check stop activated with a dist to goal of: "+this.distToGoal(this.x, this.y));
+			System.out.println("Check stop activated with a dist to goal of: " + this.distToGoal(this.x, this.y));
 			this.stop = true;
 		} else if (Button.ENTER.isDown()) {
 			this.stop = true;
-		} else if (System.nanoTime() - this.runStart > 175*Math.pow(10, 9)) {
+		} else if (System.nanoTime() - this.runStart > 175 * Math.pow(10, 9)) {
 			this.stop = true;
 		}
 //		if (this.inRange(1.8, 1.8, .1)) {
